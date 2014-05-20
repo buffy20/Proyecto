@@ -9,7 +9,7 @@ import java.awt.Frame;
 import java.awt.Image;
 import java.math.BigInteger;
 import java.text.NumberFormat;
-import java.util.Date;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -26,10 +26,13 @@ public class Panel extends javax.swing.JPanel {
     private Director director;
     private Genero genero;
     private NumberFormat formatoEuro = NumberFormat.getCurrencyInstance();
+    private JFileChooser fileChooser;
 
     public Panel() {
         initComponents();
         //documentCharactersLimiter1.setLimit(10);
+        DefaultComboBoxModel d = new DefaultComboBoxModel();
+        //jComboBoxGenero.setM
     }
     
     public Director getDirector(){
@@ -77,7 +80,7 @@ public class Panel extends javax.swing.JPanel {
             jTextFieldActor.setText(pelicula.getIdActor().getNombre() + " " + pelicula.getIdActor().getApellidos());
         }
         if (pelicula.getRutaImagen().isEmpty()) {
-            imagen.setIcon(new ImageIcon(getClass().getResource("")));
+            imagen.setIcon(new ImageIcon(getClass().getResource("/resources/sinImagen.png")));
         } else {
             imagen.setIcon(new ImageIcon(getClass().getResource(pelicula.getRutaImagen())));
         }
@@ -101,17 +104,18 @@ public class Panel extends javax.swing.JPanel {
         jComboBoxGenero.setSelectedIndex(0);
         jTextFieldDirector.setText("");
         jTextFieldActor.setText("");
-        imagen.setIcon(new ImageIcon(getClass().getResource("")));
-        pelicula.setValoracion(0);
-        this.showValoracion();
+        imagen.setIcon(new ImageIcon(getClass().getResource("/resources/sinImagen.png")));
+//        pelicula.setValoracion(0);
+//        this.showValoracion();
     }
 
     public Pelicula getData() {
         //Pelicula pelicula = new Pelicula();
+        actor = pelicula.getIdActor();
+        director = pelicula.getIdDirector();
         String title = jTextFiledTitulo.getText();
         try {
             if (title != null) {
-
                 pelicula.setTitulo(title);
                 pelicula.setProductora(jTextFieldProductora.getText());
                 pelicula.setNacionalidad(jTextFieldNacionalidad.getText());
@@ -120,10 +124,11 @@ public class Panel extends javax.swing.JPanel {
                 pelicula.setFechaEstreno(jDateChooser1.getDate());
                 pelicula.setValoracion(jSlider1.getValue());
                 //Genero ver = (Genero) genero.getSelectedItem();
+                //genero = jComboBoxGenero.getItemAt(jComboBoxGenero.getSelectedIndex());
                 pelicula.setIdGenero(null);
                 pelicula.setIdDirector(director);
                 pelicula.setIdActor(actor);
-                //pelicula.setRutaImagen(null);
+                pelicula.setRutaImagen(null);
                 if (jCheckBox1.isSelected()) {
                     pelicula.setOscars(true);
                 } else {
@@ -150,10 +155,11 @@ public class Panel extends javax.swing.JPanel {
                 pelicula.setFechaEstreno(jDateChooser1.getDate());
                 pelicula.setValoracion(jSlider1.getValue());
                 //Genero ver = (Genero) genero.getSelectedItem();
+                //genero = jComboBoxGenero.getItemAt(jComboBoxGenero.getSelectedIndex());
                 pelicula.setIdGenero(null);
                 pelicula.setIdDirector(null);
                 pelicula.setIdActor(null);
-                //pelicula.setRutaImagen(null);
+                pelicula.setRutaImagen(fileChooser.getSelectedFile().getPath());
                 if (jCheckBox1.isSelected()) {
                     pelicula.setOscars(true);
                 } else {
@@ -237,6 +243,9 @@ public class Panel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        VideotecaPUEntityManager = java.beans.Beans.isDesignTime() ? null : javax.persistence.Persistence.createEntityManagerFactory("VideotecaPU").createEntityManager();
+        generoQuery = java.beans.Beans.isDesignTime() ? null : VideotecaPUEntityManager.createQuery("SELECT g FROM Genero g");
+        generoList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : generoQuery.getResultList();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jTextFiledTitulo = new javax.swing.JTextField();
@@ -258,7 +267,7 @@ public class Panel extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jCheckBox1 = new javax.swing.JCheckBox();
-        jComboBoxGenero = new javax.swing.JComboBox();
+        jComboBoxGenero = new javax.swing.JComboBox<Genero>();
         jSlider1 = new javax.swing.JSlider();
         estrellas = new javax.swing.JLabel();
         imagen = new javax.swing.JLabel();
@@ -405,7 +414,7 @@ public class Panel extends javax.swing.JPanel {
     }//GEN-LAST:event_botonActorActionPerformed
 
     private void examinarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_examinarActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
+        fileChooser = new JFileChooser();
         FileNameExtensionFilter filtro = new FileNameExtensionFilter("Imágenes", "bmp", "gif", "jpg", "png");
         fileChooser.setFileFilter(filtro);
         int respuesta = fileChooser.showOpenDialog(this);
@@ -421,17 +430,21 @@ public class Panel extends javax.swing.JPanel {
         }
         //Guardar la ruta de la imagen en la película
         pelicula.setRutaImagen(fileChooser.getSelectedFile().getPath());
+        System.out.println(fileChooser.getSelectedFile().getPath());
     }//GEN-LAST:event_examinarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.persistence.EntityManager VideotecaPUEntityManager;
     private javax.swing.JButton botonActor;
     private javax.swing.JButton botonDirector;
     private javax.swing.JLabel estrellas;
     private javax.swing.JButton examinar;
+    private java.util.List<videoteca.Genero> generoList;
+    private javax.persistence.Query generoQuery;
     private javax.swing.JLabel image;
     private javax.swing.JLabel imagen;
     private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JComboBox jComboBoxGenero;
+    private javax.swing.JComboBox<Genero> jComboBoxGenero;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

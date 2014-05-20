@@ -21,7 +21,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class Table extends javax.swing.JFrame {
 
     ModeloTabla modelo;
-    private Boolean activado;
+    private Boolean activateSafe;
 
     public Table() {
         initComponents();
@@ -30,7 +30,6 @@ public class Table extends javax.swing.JFrame {
         modelo = new ModeloTabla();
         modelo.setDataList(list1);
         jTable1.setModel(modelo);
-
         //Alinear a la derecha las cantidades
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -41,7 +40,6 @@ public class Table extends javax.swing.JFrame {
         jTable1.getColumnModel().getColumn(2).setCellRenderer(new FechaRenderer());
         //Pone una imagen dependiendo de si la película tiene Óscars o no
         jTable1.getColumnModel().getColumn(5).setCellRenderer(new OscarsRenderer());
-
         //Cambiar ancho de columnas
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(180);
         jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
@@ -49,7 +47,6 @@ public class Table extends javax.swing.JFrame {
         jTable1.getColumnModel().getColumn(3).setPreferredWidth(50);
         jTable1.getColumnModel().getColumn(4).setPreferredWidth(60);
         jTable1.getColumnModel().getColumn(5).setPreferredWidth(5);
-
         //Sólo se permite seleccionar un registro
         jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //Detectar cambio de selección en la tabla
@@ -262,7 +259,6 @@ public class Table extends javax.swing.JFrame {
                 entityManager1.remove(pelicula);
                 //Finalizar la transacción actualizando la BD 
                 entityManager1.getTransaction().commit();
-
                 //Eliminar el objeto de la lista de datos 
                 list1.remove(pelicula);
                 //Informar al JTable que se ha eliminado una fila 
@@ -276,22 +272,25 @@ public class Table extends javax.swing.JFrame {
 
     private void insertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertActionPerformed
         jTabbedPane1.setSelectedIndex(1);
-        panel2.clear();
+        if (panel2.isShowing()) {
+            panel2.clear();
+        }
         panel2.editable(true);
-        activado = true;
+        activateSafe = true;
     }//GEN-LAST:event_insertActionPerformed
 
     private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
-        if (activado) {
+        if (activateSafe) {
             Pelicula pelicula = panel2.getData();
+            //Guardar la clave ajena de director
             int idDirector = panel2.getDirector().getIdDirector();
+            System.out.println(idDirector);
             Director director = entityManager1.find(Director.class, idDirector);
             System.out.println(director.getNombre());
-            
+            //Guardar la clave ajena de actor
             int idActor = panel2.getActor().getIdActor();
             Actor actor = entityManager1.find(Actor.class, idActor);
             System.out.println(actor.getNombre());
-            
             entityManager1.getTransaction().begin();
             //Almacenar el objeto en la BD 
             entityManager1.persist(pelicula);
@@ -311,7 +310,6 @@ public class Table extends javax.swing.JFrame {
             //Actualizar el objeto en la BD 
             entityManager1.merge(pelicula);
             entityManager1.getTransaction().commit();
-
             //Añadir el objeto al final de la lista de datos 
             list1.set(selectedRow, pelicula);
             //Informar al JTable que se ha modificado la fila seleccionada 
@@ -323,7 +321,7 @@ public class Table extends javax.swing.JFrame {
     private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
         jTabbedPane1.setSelectedIndex(1);
         panel2.editable(true);
-        activado = false;
+        activateSafe = false;
     }//GEN-LAST:event_editActionPerformed
 
     private void detailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detailActionPerformed
@@ -332,6 +330,7 @@ public class Table extends javax.swing.JFrame {
 
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        //Cuando se hace click 2 veces sobre un registro, se muestra en la pestaña de datos
         if (evt.getClickCount() > 1) {
             jTabbedPane1.setSelectedIndex(1);
         }
