@@ -271,11 +271,15 @@ public class Table extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteActionPerformed
 
     private void insertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertActionPerformed
+        //Al hacer click en el botón para mostrar los detalles, se abre la pestaña de datos
         jTabbedPane1.setSelectedIndex(1);
         if (panel2.isShowing()) {
             panel2.clear();
         }
+        //Se activan los elementos del panel para poder escribir en ellos y/o editarlos
         panel2.editable(true);
+        //Se establece el valor de la variable a "true" para saber que al guardar 
+        //se está almacenando una nueva pelicula
         activateSafe = true;
     }//GEN-LAST:event_insertActionPerformed
 
@@ -319,12 +323,17 @@ public class Table extends javax.swing.JFrame {
     }//GEN-LAST:event_saveActionPerformed
 
     private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
+        //Al hacer click en el botón para mostrar los detalles, se abre la pestaña de datos
         jTabbedPane1.setSelectedIndex(1);
+        //Se activan los elementos del panel para poder escribir en ellos y/o editarlos
         panel2.editable(true);
+        //Se establece el valor de la variable a "true" para saber que al guardar 
+        //se está almacenando la edición de una película existente
         activateSafe = false;
     }//GEN-LAST:event_editActionPerformed
 
     private void detailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detailActionPerformed
+        //Al hacer click en el botón para mostrar los detalles, se abre la pestaña de datos
         jTabbedPane1.setSelectedIndex(1);
     }//GEN-LAST:event_detailActionPerformed
 

@@ -5,11 +5,22 @@
  */
 package videoteca;
 
+import Renderers.ActorListRenderer;
+import Renderers.GeneroListRenderer;
 import java.awt.Frame;
 import java.awt.Image;
 import java.math.BigInteger;
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -28,11 +39,21 @@ public class Panel extends javax.swing.JPanel {
     private NumberFormat formatoEuro = NumberFormat.getCurrencyInstance();
     private JFileChooser fileChooser;
 
+
+
     public Panel() {
         initComponents();
-        //documentCharactersLimiter1.setLimit(10);
-        DefaultComboBoxModel d = new DefaultComboBoxModel();
-        //jComboBoxGenero.setM
+        //Establecer el límite de caracteres de los campos
+//        DocumentCharactersLimiter documentCharactersLimiter1 = new DocumentCharactersLimiter();
+//        DocumentCharactersLimiter documentCharactersLimiter2 = new DocumentCharactersLimiter();
+//        documentCharactersLimiter1.setLimit(50);
+//        documentCharactersLimiter1.setLimit(40);
+//        jTextFieldTitulo.setDocument(documentCharactersLimiter1);
+//        jTextFieldProductora.setDocument(documentCharactersLimiter1);
+//        jTextFieldNacionalidad.setDocument(documentCharactersLimiter2);
+//        //Crear un modelo para que en el comboBox se pueda elegir el género
+//        DefaultComboBoxModel modeloCombo = new DefaultComboBoxModel(generos.toArray());
+////        jComboBoxGenero.setModel(modeloCombo);
     }
     
     public Director getDirector(){
@@ -58,7 +79,7 @@ public class Panel extends javax.swing.JPanel {
     public void showData() {
         actor = pelicula.getIdActor();
         director = pelicula.getIdDirector();
-        jTextFiledTitulo.setText(pelicula.getTitulo());
+        jTextFieldTitulo.setText(pelicula.getTitulo());
         jTextFieldProductora.setText(pelicula.getProductora());
         jTextFieldNacionalidad.setText(pelicula.getNacionalidad());
         jDateChooser1.setDate(pelicula.getFechaEstreno());
@@ -93,7 +114,7 @@ public class Panel extends javax.swing.JPanel {
     }
 
     public void clear() {
-        jTextFiledTitulo.setText("");
+        jTextFieldTitulo.setText("");
         jTextFieldProductora.setText("");
         jTextFieldNacionalidad.setText("");
         jDateChooser1.setDate(null);
@@ -105,15 +126,13 @@ public class Panel extends javax.swing.JPanel {
         jTextFieldDirector.setText("");
         jTextFieldActor.setText("");
         imagen.setIcon(new ImageIcon(getClass().getResource("/resources/sinImagen.png")));
-//        pelicula.setValoracion(0);
-//        this.showValoracion();
     }
 
+    //Recoger los datos introducidos por el usuario para crear un nuevo registro en la tabla Peliculas
     public Pelicula getData() {
-        //Pelicula pelicula = new Pelicula();
         actor = pelicula.getIdActor();
         director = pelicula.getIdDirector();
-        String title = jTextFiledTitulo.getText();
+        String title = jTextFieldTitulo.getText();
         try {
             if (title != null) {
                 pelicula.setTitulo(title);
@@ -123,8 +142,6 @@ public class Panel extends javax.swing.JPanel {
                 pelicula.setRecaudacion(BigInteger.valueOf(Long.valueOf(jTextFieldRecaudacion.getText())));
                 pelicula.setFechaEstreno(jDateChooser1.getDate());
                 pelicula.setValoracion(jSlider1.getValue());
-                //Genero ver = (Genero) genero.getSelectedItem();
-                //genero = jComboBoxGenero.getItemAt(jComboBoxGenero.getSelectedIndex());
                 pelicula.setIdGenero(null);
                 pelicula.setIdDirector(director);
                 pelicula.setIdActor(actor);
@@ -143,8 +160,9 @@ public class Panel extends javax.swing.JPanel {
         return pelicula;
     }
 
+    //Actualizar los datos de una película
     public Pelicula update() {
-        String title = jTextFiledTitulo.getText();
+        String title = jTextFieldTitulo.getText();
         try {
             if (title != null) {
                 pelicula.setTitulo(title);
@@ -154,8 +172,6 @@ public class Panel extends javax.swing.JPanel {
                 pelicula.setRecaudacion(BigInteger.valueOf(Long.valueOf(jTextFieldRecaudacion.getText())));
                 pelicula.setFechaEstreno(jDateChooser1.getDate());
                 pelicula.setValoracion(jSlider1.getValue());
-                //Genero ver = (Genero) genero.getSelectedItem();
-                //genero = jComboBoxGenero.getItemAt(jComboBoxGenero.getSelectedIndex());
                 pelicula.setIdGenero(null);
                 pelicula.setIdDirector(null);
                 pelicula.setIdActor(null);
@@ -174,6 +190,7 @@ public class Panel extends javax.swing.JPanel {
         return pelicula;
     }
 
+    //Mostrar en un jLabel, una imagen con estrellas, dependiendo de la valoración
     public void showValoracion() {
         switch (pelicula.getValoracion()) {
             case 0:
@@ -197,12 +214,13 @@ public class Panel extends javax.swing.JPanel {
         }
     }
 
+    //Activar/desactivar los elementos del panel y/o hacerlos visibles/invisibles
     public void editable(boolean si) {
         if (si) {
             jTextFieldProductora.setEditable(true);
             jComboBoxGenero.setEnabled(true);
             jTextFieldDirector.setEditable(true);
-            jTextFiledTitulo.setEditable(true);
+            jTextFieldTitulo.setEditable(true);
             jTextFieldNacionalidad.setEditable(true);
             jTextFieldRecaudacion.setEditable(true);
             jTextFieldActor.setEditable(true);
@@ -218,7 +236,7 @@ public class Panel extends javax.swing.JPanel {
             jTextFieldProductora.setEditable(false);
             jComboBoxGenero.setEnabled(false);
             jTextFieldDirector.setEditable(false);
-            jTextFiledTitulo.setEditable(false);
+            jTextFieldTitulo.setEditable(false);
             jTextFieldNacionalidad.setEditable(false);
             jTextFieldRecaudacion.setEditable(false);
             jTextFieldActor.setEditable(false);
@@ -248,7 +266,7 @@ public class Panel extends javax.swing.JPanel {
         generoList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : generoQuery.getResultList();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextFiledTitulo = new javax.swing.JTextField();
+        jTextFieldTitulo = new javax.swing.JTextField();
         jTextFieldProductora = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -285,7 +303,7 @@ public class Panel extends javax.swing.JPanel {
 
         jLabel1.setText("Título:");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 14, -1, -1));
-        jPanel1.add(jTextFiledTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(112, 11, 250, -1));
+        jPanel1.add(jTextFieldTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(112, 11, 250, -1));
         jPanel1.add(jTextFieldProductora, new org.netbeans.lib.awtextra.AbsoluteConstraints(112, 49, 250, -1));
 
         jLabel2.setText("Productora:");
@@ -414,6 +432,7 @@ public class Panel extends javax.swing.JPanel {
     }//GEN-LAST:event_botonActorActionPerformed
 
     private void examinarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_examinarActionPerformed
+        //Escoger una imagen y mostrarla en el jLabel correspondiente 
         fileChooser = new JFileChooser();
         FileNameExtensionFilter filtro = new FileNameExtensionFilter("Imágenes", "bmp", "gif", "jpg", "png");
         fileChooser.setFileFilter(filtro);
@@ -466,6 +485,6 @@ public class Panel extends javax.swing.JPanel {
     private javax.swing.JTextField jTextFieldNacionalidad;
     private javax.swing.JTextField jTextFieldProductora;
     private javax.swing.JTextField jTextFieldRecaudacion;
-    private javax.swing.JTextField jTextFiledTitulo;
+    private javax.swing.JTextField jTextFieldTitulo;
     // End of variables declaration//GEN-END:variables
 }
